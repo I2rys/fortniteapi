@@ -1,5 +1,5 @@
 <h1 align="center">SBFAFFIM</h1>
-<h4 align="center">A complete fortnite.io API module maybe</h4>
+<h4 align="center">Simple but fast & flexible complete fortnite.io API module maybe</h4>
 <p align="center">
 	<a href="https://github.com/I2rys/SBFAFFIM/blob/main/LICENSE"><img src="https://img.shields.io/github/license/I2rys/SBFAFFIM?style=flat-square"></img></a>
 	<a href="https://github.com/I2rys/SBFAFFIM/issues"><img src="https://img.shields.io/github/issues/I2rys/SBFAFFIM.svg"></img></a>
