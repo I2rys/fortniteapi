@@ -1,15 +1,14 @@
-//Dependencies
-const SBFAFFIM = require("../index.js")
+// Dependencies
+const { FI } = require('../index.js');
 
-//Variables
-const FI = new SBFAFFIM.FI("your_fortnite.io_apikey_here")
+// Variables
+const fi = new FI('your_fortnite.io_apikey_here');
 
-//Functions
-async function Main(){
-    const results = await FI.tournament_scores()
+// Functions
+const main = async () => {
+  const results = await fi.tournament_scores('S11_CC_Contenders_EU_Event1');
+  console.log(results);
+};
 
-    console.log(results)
-}
-
-//Main
-Main()
+// Main
+main();
