@@ -1,0 +1,25 @@
+{
+  "name": "sbfaffim",
+  "version": "1.0.0",
+  "description": "Simple but fast & flexible complete fortnite.io API module",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/I2rys/SBFAFFIM.git"
+  },
+  "author": "I2rys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/I2rys/SBFAFFIM/issues"
+  },
+  "homepage": "https://github.com/I2rys/SBFAFFIM#readme",
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
+}

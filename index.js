@@ -1,698 +1,208 @@
-//Dependencies
-const Request = require("request")
+// Dependencies
+const axios = require('axios').default;
+const { version: packageVersion } = require('./package.json');
 
-//Variables
-var Self = {}
-Self.api_down = "It looks like the API is down, please try again later."
+// Main
+class FI {
+  constructor(apiKey) {
+    if (!apiKey) throw new Error('Please provide an API key');
+    this.apiKey = apiKey;
 
-//Main
-function FI(api_key = String){
-    this.challenges_list = async function(season = String = "current", language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!season){
-                season = "current"
-            }
-    
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/challenges?season=${season}&lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the season, language & api_key is valid.")
-                }
-            })
-        })
+    this.axios = axios.create({
+      method: 'GET',
+      baseURL: 'https://fortniteapi.io',
+      headers: {
+        Authorization: this.apiKey,
+        'User-Agent': `SBFAFFIM/${packageVersion}`,
+      },
+    });
+  }
+
+  async send_request(url, query) {
+    const queryString = query ? `?${new URLSearchParams(query)}` : '';
+
+    try {
+      const resp = await this.axios({
+        url: `${url}${queryString}`,
+      });
+
+      if (resp.data.code) {
+        throw new Error(`API request failed with code ${resp.data.code}`);
+      }
+
+      return resp.data;
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.code) {
+        throw new Error(`API request failed with code ${err.response.data.code}`);
+      }
+
+      throw err;
     }
+  }
 
-    this.items_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/items/list?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async challenges_list(season = 'current', lang = 'en') {
+    return this.send_request('/v2/challenges', {
+      season,
+      lang,
+    });
+  }
 
-    this.upcoming_items = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/items/upcoming?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
-    
-    this.item_details = async function(item_id = String = "CID_242_Athena_Commando_F_Bullseye", language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!item_id){
-                item_id = "CID_242_Athena_Commando_F_Bullseye"
-            }
+  async items_list(lang = 'en') {
+    return this.send_request('/v2/items/list', {
+      lang,
+    });
+  }
 
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/items/get?id=${item_id}&lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the item_id, language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async upcoming_items(lang = 'en') {
+    return this.send_request('/v2/items/upcoming', {
+      lang,
+    });
+  }
 
-    this.sets_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/items/sets?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async item_details(item_id = 'CID_242_Athena_Commando_F_Bullseye', lang = 'en') {
+    return this.send_request('/v2/items/get', {
+      id: item_id,
+      lang,
+    });
+  }
 
-    this.daily_shops = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/shop?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async sets_list(lang = 'en') {
+    return this.send_request('/v2/items/sets', {
+      lang,
+    });
+  }
 
-    this.rarities_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/rarities?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async daily_shops(lang = 'en') {
+    return this.send_request('/v2/shop', {
+      lang,
+    });
+  }
 
-    this.get_account_id = async function(username = String = "Ninja"){
-        return new Promise((resolve)=>{
-            if(!username){
-                username = "Ninja"
-            }
-    
-            Request(`https://fortniteapi.io/v1/lookup?username=${username}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the username & api_key is valid.")
-                }
-            })
-        })
-    }
+  async rarities_list(lang = 'en') {
+    return this.send_request('/v2/rarities', {
+      lang,
+    });
+  }
 
-    this.global_player_stats = async function(account_id = String = "8d0e3c7416f143fabbf1668e7f30e778"){
-        return new Promise((resolve)=>{
-            if(!account_id){
-                account_id = "8d0e3c7416f143fabbf1668e7f30e778"
-            }
-    
-            Request(`https://fortniteapi.io/v1/stats?account=${account_id}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the account_id & api_key is valid.")
-                }
-            })
-        })
-    }
+  async get_account_id(username) {
+    const account = await this.send_request('/v1/lookup', {
+      username,
+    });
 
-    this.br_stw_c_news = async function(type = String = "br", language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!type){
-                type = "br"
-            }
+    return account.account_id;
+  }
 
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v1/news?lang=${language}&type=${type}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the type, language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async global_player_stats(username_or_id) {
+    const account = username_or_id.length === 32 ? username_or_id : await this.get_account_id(username_or_id);
 
-    this.battle_pass_rewards = async function(season = String = "current", language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!season){
-                season = "current"
-            }
+    return this.send_request('/v1/stats', {
+      account,
+    });
+  }
 
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v2/battlepass?lang=${language}&season=${season}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the season, language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async br_stw_c_news(type = 'br', lang = 'en') {
+    return this.send_request('/v1/news', {
+      type,
+      lang,
+    });
+  }
 
-    this.achievements = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-    
-            Request(` https://fortniteapi.io/v1/achievements?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async battle_pass_rewards(season = 'current', lang = 'en') {
+    return this.send_request('/v2/battlepass', {
+      season,
+      lang,
+    });
+  }
 
-    this.tournaments = async function(region = String = "NAE", language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!region){
-                region = "NAE"
-            }
+  async achievements(lang = 'en') {
+    return this.send_request('/v1/achievements', {
+      lang,
+    });
+  }
 
-            if(!language){
-                language = "en"
-            }
-    
-            Request(`https://fortniteapi.io/v1/events/list?lang=${language}&region=${region}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the region, language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async tournaments(region = 'NAE', lang = 'en') {
+    return this.send_request('/v1/events/list', {
+      region,
+      lang,
+    });
+  }
 
-    this.tournament_details = async function(tournament_id = String = "S11_CC_Contenders_EU_Event1"){
-        return new Promise((resolve)=>{
-            if(!tournament_id){
-                tournament_id = "S11_CC_Contenders_EU_Event1"
-            }
-    
-            Request(`https://fortniteapi.io/v1/events/window?windowId=${tournament_id}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the tournament_id & api_key is valid.")
-                }
-            })
-        })
-    }
+  async tournament_details(window_id) {
+    return this.send_request('/v1/events/window', {
+      windowId: window_id,
+    });
+  }
 
-    this.tournament_scores = async function(event_id = String = "epicgames_S14_FNCS_Qualifier1_EU_PC"){
-        return new Promise((resolve)=>{
-            if(!event_id){
-                event_id = "epicgames_S14_FNCS_Qualifier1_EU_PC"
-            }
-    
-            Request(`https://fortniteapi.io/v1/events/cumulative?eventId=${event_id}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the event_id & api_key is valid.")
-                }
-            })
-        })
-    }
+  async tournament_scores(event_id) {
+    return this.send_request('/v1/events/cumulative', {
+      eventId: event_id,
+    });
+  }
 
-    this.maps_list = async function(){
-        return new Promise((resolve)=>{
-            Request("https://fortniteapi.io/v1/maps/list", {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the api_key is valid.")
-                }
-            })
-        })
-    }
+  async maps_list() {
+    return this.send_request('/v1/maps/list');
+  }
 
-    this.list_seasons = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
+  async list_seasons(lang = 'en') {
+    return this.send_request('/v1/seasons/list', {
+      lang,
+    });
+  }
 
-            Request(`https://fortniteapi.io/v1/seasons/list?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async loot_weapons_list(lang = 'en') {
+    return this.send_request('/v1/loot/list', {
+      lang,
+    });
+  }
 
-    this.loot_weapons_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
+  async pois_list(lang = 'en') {
+    return this.send_request('/v2/game/poi', {
+      lang,
+    });
+  }
 
-            Request(`https://fortniteapi.io/v1/loot/list?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async gamemodes_list(lang = 'en') {
+    return this.send_request('/v1/game/modes', {
+      lang,
+    });
+  }
 
-    this.pois_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
+  async islands_list() {
+    return this.send_request('/v1/creative/featured');
+  }
 
-            Request(`https://fortniteapi.io/v2/game/poi?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+  async fishes_list(lang = 'en') {
+    return this.send_request('/v1/loot/fish', {
+      lang,
+    });
+  }
 
-    this.gamemodes_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
+  async player_fish_stats(username_or_id) {
+    const accountId = username_or_id.length === 32 ? username_or_id : await this.get_account_id(username_or_id);
 
-            Request(`https://fortniteapi.io/v1/game/modes?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
+    return this.send_request('/v1/stats/fish', {
+      accountId,
+    });
+  }
 
-    this.islands_list = async function(){
-        return new Promise((resolve)=>{
-            Request("https://fortniteapi.io/v1/creative/featured", {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the api_key is valid.")
-                }
-            })
-        })
-    }
+  async crews_list(lang = 'en') {
+    return this.send_request('/v2/crew', {
+      lang,
+    });
+  }
 
-    this.fishes_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
+  async crews_history(lang = 'en') {
+    return this.send_request('/v2/crew/history', {
+      lang,
+    });
+  }
 
-            Request(`https://fortniteapi.io/v1/loot/fish?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the api_key is valid.")
-                }
-            })
-        })
-    }
-
-    this.player_fish_stats = async function(account_id = String = "cfd16ec54126497ca57485c1ee1987dc"){
-        return new Promise((resolve)=>{
-            if(!account_id){
-                account_id = "cfd16ec54126497ca57485c1ee1987dc"
-            }
-
-            Request(`https://fortniteapi.io/v1/stats/fish?accountId=${account_id}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the account_id & api_key is valid.")
-                }
-            })
-        })
-    }
-
-    this.crews_list = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-
-            Request(`https://fortniteapi.io/v2/crew?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the account_id & api_key is valid.")
-                }
-            })
-        })
-    }
-
-    this.crews_history = async function(language = String = "en"){
-        return new Promise((resolve)=>{
-            if(!language){
-                language = "en"
-            }
-
-            Request(`https://fortniteapi.io/v2/crew/history?lang=${language}`, {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the language & api_key is valid.")
-                }
-            })
-        })
-    }
-
-    this.vehicles_list = async function(){
-        return new Promise((resolve)=>{
-            Request("https://fortniteapi.io/v2/game/vehicles", {
-                "headers": {
-                    "Authorization": api_key
-                }
-            }, function(err, res, body){
-                if(err){
-                    resolve(Self.api_down)
-                }
-    
-                body = JSON.parse(body)
-    
-                if(body.result){
-                    resolve(body)
-                }else{
-                    resolve("Please make sure the api_key is valid.")
-                }
-            })
-        })
-    }
+  async vehicles_list() {
+    return this.send_request('/v2/game/vehicles');
+  }
 }
 
-//Exporter
+// Exporter
 module.exports = {
-    FI: FI
-}
+  FI,
+};
