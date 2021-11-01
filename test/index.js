@@ -2,7 +2,7 @@
 const { FI } = require('../index.js');
 
 // Variables
-const fi = new FI('your_fortnite.io_apikey_here');
+const fi = new FI('your_fortniteapi.io_apikey_here');
 
 // Functions
 const main = async () => {
