@@ -1,5 +1,5 @@
 # fortniteapi.io
-Simple but fast & flexible complete fortniteapi.io API module maybe
+Flexible API for fortniteapi.io
 
 ## Installation
 Github:
