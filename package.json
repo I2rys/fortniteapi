@@ -1,0 +1,28 @@
+{
+  "name": "fortniteapi",
+  "version": "1.0.0",
+  "description": "Flexible API for fortniteapi.io",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/I2rys/fortniteapi.git"
+  },
+  "keywords": [
+    "fortniteapi",
+    "fortnite",
+    "api",
+    "fortnite-api"
+  ],
+  "author": "i2rys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/I2rys/fortniteapi/issues"
+  },
+  "homepage": "https://github.com/I2rys/fortniteapi#readme"
+}
