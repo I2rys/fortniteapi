@@ -1,3 +1,5 @@
+"use strict";
+
 // Dependencies
 const axios = require('axios').default;
 const { version: packageVersion } = require('./package.json');

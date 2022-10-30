@@ -1,37 +1,37 @@
-<h1 align="center">SBFAFFIM</h1>
-<h4 align="center">Simple but fast & flexible complete fortniteapi.io API module maybe</h4>
-<p align="center">
-	<a href="https://github.com/I2rys/SBFAFFIM/blob/main/LICENSE"><img src="https://img.shields.io/github/license/I2rys/SBFAFFIM?style=flat-square"></img></a>
-	<a href="https://github.com/I2rys/SBFAFFIM/issues"><img src="https://img.shields.io/github/issues/I2rys/SBFAFFIM.svg"></img></a>
-	<a href="https://nodejs.org/"><img src="https://img.shields.io/badge/-Nodejs-green?style=flat-square&logo=Node.js"></img></a>
-</p>
-
+# fortniteapi.io
+Simple but fast & flexible complete fortniteapi.io API module maybe
 
 ## Installation
 Github:
+```
+git clone https://github.com/I2rys/fortniteapi.io
+```
 
-    git clone https://github.com/I2rys/SBFAFFIM
-
-NPM Packages:
-
-    npm i request
+NpmJS:
+```
+npm i fortniteapi.io
+```
     
 ## Usage
 Challenges list
+```
+FI.challenges_list(season, language)
+```
 
-    FI.challenges_list(season, language)
-    
 Items list
+```
+FI.items_list(language)
+```
 
-    FI.items_list(language)
-    
 Upcoming items
+```
+FI.upcoming_items(language)
+```
 
-    FI.upcoming_items(language)
-    
 Item details
-
-    FI.item_details(item_id, language)
+```
+FI.item_details(item_id, language)
+```
 
 Daily shops
 ```
